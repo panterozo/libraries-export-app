@@ -14,6 +14,22 @@ export class AppComponent {
 
   imprimeJson(){
 
+    // Funcion Imagenes
+    function toDataURL(url, callback) {
+      var xhr = new XMLHttpRequest();
+      xhr.onload = function() {
+        var reader = new FileReader();
+        reader.onloadend = function() {
+          callback(reader.result);
+        }
+        reader.readAsDataURL(xhr.response);
+      };
+      xhr.open('GET', url);
+      xhr.responseType = 'blob';
+      xhr.send();
+    }
+
+
 
     var tablaSegundaPagina = {
       has_contrato : "ha descripcion",
@@ -299,6 +315,12 @@ export class AppComponent {
 
 
 
+      // Prueba Imagenes
+      let imgData = null;
+      toDataURL('/assets/img_test1.jpg', function(dataUrl) {
+        console.log(dataUrl);
+      })
+
 
       for (var key in arrayIn){
         if (arrayIn.hasOwnProperty(key)) {
@@ -311,7 +333,8 @@ export class AppComponent {
 
     }
 
-    doc.save('imprimeJson.pdf');
+    // Comentado temporalmente para revisar log
+    // doc.save('imprimeJson.pdf');
 
 
   }
