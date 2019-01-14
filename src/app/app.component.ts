@@ -1,4 +1,5 @@
 import { Component } from '@angular/core';
+import * as path from 'path';
 
 
 declare var jsPDF: any; // Important
@@ -106,9 +107,9 @@ export class AppComponent {
       average_plant:"average_plant descripcion",
       /*Van 2 imágenes*/
       images:[{
-        path: "http://localhost/imagen1.jpeg"
+        path: "estonoexiste.jpg"
       },{
-        path: "http://localhost/imagen2.jpeg"
+        path: "estonoexiste.jpg"
       }],
       /*Tabla final*/
       estado_general: "Buena",
@@ -168,9 +169,9 @@ export class AppComponent {
       emergence_50:"",
       /*Van 2 imágenes*/
       images:[{
-        path: "http://localhost/imagen1.jpeg"
+        path: "/assets/img_test1.jpg"
       },{
-        path: "http://localhost/imagen2.jpeg"
+        path: "/assets/img_test2.jpg"
       }],
       /*Tabla final*/
       estado_general: "Buena",
@@ -198,7 +199,7 @@ export class AppComponent {
       doc.autoTableSetDefaults({
           headerStyles: {fillColor: [155, 89, 182]}, // Purple
           startY: 25,
-          margin: {top: 200},
+          margin: {top: 100},
           pageBreak: "avoid",
           addPageContent: function(data) {
               doc.setFontSize(20);
@@ -316,11 +317,22 @@ export class AppComponent {
 
 
       // Prueba Imagenes
-      let imgData = null;
-      toDataURL('/assets/img_test1.jpg', function(dataUrl) {
-        console.log(dataUrl);
-      })
+      var img = new Image();
+      img.src = arrayIn["images"][0]["path"];
+      var width = 350;
+      console.log(img.width);
+      if (img.width == 0) {
+        img.src = 'assets/noimage.jpg';
+      }
+      doc.addImage(img, 'JPEG', 60, 320, width, width*img.height/img.width);
 
+      var img2 = new Image();
+      img2.src = arrayIn["images"][1]["path"];
+      var width = 230;
+      if (img2.width == 0){
+        img2.src = 'assets/noimage.jpg';
+      }
+      doc.addImage(img2, 'JPEG', 460, 380, width, width*img.height/img.width);
 
       for (var key in arrayIn){
         if (arrayIn.hasOwnProperty(key)) {
@@ -328,13 +340,15 @@ export class AppComponent {
         }
       }
 
+      if (i!=(array.length-1)){
+        doc.addPage();
+      }
 
-      doc.addPage();
 
     }
 
     // Comentado temporalmente para revisar log
-    // doc.save('imprimeJson.pdf');
+    doc.save('imprimeJson.pdf');
 
 
   }
