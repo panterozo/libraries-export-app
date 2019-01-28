@@ -1,7 +1,55 @@
 import { Component } from '@angular/core';
 
+
 declare var jsPDF: any; // Important
 
+function stat2col(value) {
+  if (value== "Excelente") {
+    return [0,0,255];
+  }
+  else if (value == "Buena") {
+    return [0,200,0];
+  }
+  else if (value == "Regular") {
+    return [200,200,0];
+  }
+  else if (value == "Mala") {
+    return [255,0,0];
+  }
+  else if (value == "Sin Especificar") {
+    return [128,128,128];
+  }
+  else if (value == "Baja") {
+    return [128,128,128];
+  }
+  else if (value == "Alta") {
+    return [0,200,0];
+  }
+}
+
+function stat2col_maleza(value) {
+  if (value== "Excelente") {
+    return [0,0,255];
+  }
+  else if (value == "Buena") {
+    return [0,200,0];
+  }
+  else if (value == "Regular") {
+    return [200,200,0];
+  }
+  else if (value == "Mala") {
+    return [255,0,0];
+  }
+  else if (value == "Sin Especificar") {
+    return [128,128,128];
+  }
+  else if (value == "Baja") {
+    return [0,200,0];
+  }
+  else if (value == "Alta") {
+    return [255,0,0];
+  }
+}
 
 @Component({
   selector: 'app-root',
@@ -11,7 +59,7 @@ declare var jsPDF: any; // Important
 export class AppComponent {
   title = 'libraries-export-app';
 
-  imprimeJson(){
+  async imprimeJson(){
 
     var tablaSegundaPagina = {
       has_contrato : "ha descripcion",
@@ -88,9 +136,9 @@ export class AppComponent {
       average_plant:"average_plant descripcion",
       /*Van 2 imágenes*/
       images:[{
-        path: "estonoexiste.jpg"
+        path: "assets/square.jpg"
       },{
-        path: "estonoexiste.jpg"
+        path: "assets/vertical.jpg"
       }],
       /*Tabla final*/
       estado_general: "Buena",
@@ -179,7 +227,7 @@ export class AppComponent {
       doc.setPage(i+1);
       doc.autoTableSetDefaults({
           headerStyles: {fillColor: [155, 89, 182]}, // Purple
-          startY: 25,
+          startY: 10,
           margin: {top: 100},
           pageBreak: "avoid",
           addPageContent: function(data) {
@@ -203,7 +251,7 @@ export class AppComponent {
       // Título de cada página
       doc.setFontSize(32);
       doc.setFontType("bold");
-      doc.text(arrayIn["nombre_variedad"]+" - "+arrayIn["nombre_agricultor"], 60, 70);
+      doc.text(arrayIn["nombre_variedad"]+" - "+arrayIn["nombre_agricultor"], 60, 40);
 
       // Tabla
 
@@ -239,7 +287,7 @@ export class AppComponent {
 
      doc.autoTable(cols, rows2, {
       drawHeaderRow: () => false,
-          startY: 100,
+          startY: 60,
           margin: {horizontal: 60},
           styles: {
             columnWidth: 'wrap',
@@ -268,7 +316,7 @@ export class AppComponent {
 
       doc.autoTable(cols, rows3, {
        drawHeaderRow: () => false,
-           startY: 100,
+           startY: 60,
            margin: {horizontal: 410},
            styles: {columnWidth: 'wrap',
              fontSize: 10},
@@ -282,7 +330,7 @@ export class AppComponent {
 
       doc.autoTable(crop_cols, crop_row, {
         drawHeaderRow: () => true,
-            startY: 145,
+            startY: 105,
             headerStyles: {fillColor: [41, 128, 185]},
             margin: {horizontal: 185},
             styles: {columnWidth: 48,
@@ -297,23 +345,158 @@ export class AppComponent {
 
 
 
-      // Prueba Imagenes
-      var img = new Image();
-      img.src = arrayIn["images"][0]["path"];
-      var width = 350;
-      console.log(img.width);
-      if (img.width == 0) {
-        img.src = 'assets/noimage.jpg';
-      }
-      doc.addImage(img, 'JPEG', 60, 320, width, width*img.height/img.width);
+      //**************************//
+      //**** BEGIN: Imagenes *****//
+      //**************************//
 
-      var img2 = new Image();
-      img2.src = arrayIn["images"][1]["path"];
-      var width = 230;
-      if (img2.width == 0){
-        img2.src = 'assets/noimage.jpg';
+      //**** Primera Imagen  *****//
+      var width = 350;
+      var height = 180;
+      var img = new Image();
+      try{
+        await this.loadImage(arrayIn["images"][0]["path"],img);
+        console.log(img.width,img.height);
+        if (height*img.width/img.height>width) {
+          doc.addImage(img, 'JPEG', 60, 280, width, width*img.height/img.width);
+        } else {
+          doc.addImage(img, 'JPEG', 60, 280, height*img.width/img.height, height);
+        }
       }
-      doc.addImage(img2, 'JPEG', 460, 380, width, width*img.height/img.width);
+      catch(e){
+        try{
+          await this.loadImage('assets/noimage.jpg',img);
+          console.log(img.width,img.height);
+          if (height*img.width/img.height>width) {
+            doc.addImage(img, 'JPEG', 60, 280, width, width*img.height/img.width);
+          } else {
+            doc.addImage(img, 'JPEG', 60, 280, height*img.width/img.height, height);
+          }
+        }
+        catch(e2){
+          /*Aquí caerá si no puede cargar tampoco noimage.jpg. No se muestra ninguna imagen*/
+          console.log("nada que hacer");
+        }
+      }
+      //**** Segunda Imagen *****//
+      var width2 = 220;
+      var height2 = 120;
+      var img2 = new Image();
+      try{
+        await this.loadImage(arrayIn["images"][1]["path"],img2);
+        console.log(img2.width,img2.height);
+        //doc.addImage(img2, 'JPEG', 450, 380, width2, width2*img2.height/img2.width);
+        if (height2*img2.width/img2.height>width2) {
+          doc.addImage(img2, 'JPEG', 450, 340, width2, width2*img2.height/img2.width);
+        } else {
+          doc.addImage(img2, 'JPEG', 450, 340, height2*img2.width/img2.height, height2);
+        }
+      }
+      catch(e){
+        try{
+          await this.loadImage('assets/noimage.jpg',img2);
+          console.log(img2.width,img2.height);
+          if (height2*img2.width/img2.height>width2) {
+            doc.addImage(img2, 'JPEG', 450, 340, width2, width2*img2.height/img2.width);
+          } else {
+            doc.addImage(img2, 'JPEG', 450, 340, height2*img2.width/img2.height, height2);
+          }
+        }
+        catch(e2){
+          /*Aquí caerá si no puede cargar tampoco noimage.jpg. No se muestra ninguna imagen*/
+          console.log("nada que hacer 2");
+        }
+      }
+
+      //**************************//
+      //***** END: Imagenes ******//
+      //**************************//
+
+
+      //**************************//
+      //**** BEGIN: Resumen *****//
+      //**************************//
+
+
+      var statuses_cols = [{
+          title: "Estado General",
+          dataKey: "estado_general"
+        },
+        {
+          title: "Estado de Crecimiento",
+          dataKey: "estado_crecimiento"
+        },
+        {
+          title: "Estado de Malezas",
+          dataKey: "estado_malezas"
+        },
+        {
+          title: "Estado Fitosanitario",
+          dataKey: "estado_fitosantiario"
+        },
+        {
+          title: "Humedad del Suelo",
+          dataKey: "humedad_suelo"
+        }
+      ]
+
+      var statuses_obj = [{
+        estado_general: {
+          "code": arrayIn["estado_general"],
+          "color": stat2col(arrayIn["estado_general"])
+        },
+        estado_crecimiento: {
+          "code": arrayIn["estado_crecimiento"],
+          "color": stat2col(arrayIn["estado_crecimiento"])
+        },
+        estado_malezas: {
+          "code": arrayIn["estado_malezas"],
+          "color": stat2col_maleza(arrayIn["estado_malezas"])
+        },
+        estado_fitosantiario: {
+          "code": arrayIn["estado_fitosantiario"],
+          "color": stat2col(arrayIn["estado_fitosantiario"])
+        },
+        humedad_suelo: {
+          "code": arrayIn["humedad_suelo"],
+          "color": stat2col(arrayIn["humedad_suelo"])
+        }
+      }];
+/*
+      doc.autoTable(crop_cols, crop_row, {
+        drawHeaderRow: () => true,
+            startY: 145,
+            headerStyles: {fillColor: [41, 128, 185]},
+            margin: {horizontal: 185},
+            styles: {columnWidth: 48,
+              fontSize: 8},
+            columnStyles: {
+              //text: {columnWidth: 'auto'},
+              values: {columnWidth: 150},
+              details: {fillColor: [41, 128, 185], textColor: 255, fontStyle: 'normal'}
+            }
+
+        }); */
+
+      doc.setFontSize(20);
+      doc.text("Resumen", 350, 490);
+      doc.setFontSize(10);
+      doc.autoTable(statuses_cols, statuses_obj, {
+        startY: 500,
+        headerStyles: {fillColor: [41, 128, 185]},
+        createdCell: function(cell, data) {
+          let rgb = cell.raw.color
+          if (rgb) {
+            cell.styles.fillColor = rgb;
+            cell.text.align = 'center';
+            cell.text = cell.raw.code
+          }
+        }
+      });
+
+      //**************************//
+      //***** END: Resumen ******//
+      //**************************//
+
 
       for (var key in arrayIn){
         if (arrayIn.hasOwnProperty(key)) {
@@ -335,20 +518,30 @@ export class AppComponent {
   }
 
 
+  loadImage(url,img) {
+    return new Promise((resolve, reject) => {
+      //const img = new Image();
+      img.addEventListener('load', () => resolve(img));
+      img.addEventListener('error', reject); // don't forget this one
+      img.src = url;
+    });
+  }
+
+
   downloadPDFHTML(){
 
 
   //variedadr html = "<html><head><meta charset='utf8'><title>SuitArt Business Card</title><style>#bg {            position: fixed;            z-index: -1;            top: 0;            left: 0;            width: 100%;                opacity: 0.5;                filter: alpha(opacity=50); /* For IE8 and earlier */            }            #bgicon {              position: fixed;              z-index: -1;              top: -0;              left: 0;              width: 10%;              }            .page {          text-align: center;          top: 320px;          padding-top: 100px;        }        td{            padding-top: 5px;            padding-left: 5px;            font-size: 10px;            font-family: Arial;        }        .imgClass{          width: 90%;        }        body{          font-size: 10px;          font-family: Arial;        }        </style>      </head>      <body >      <img id="bg" src="/home/ignacio/Escritorio/Proyectos Independientes/Curimapu/curimapu-api/resources/fondo.jpg" alt="Fondo" />      <img id="bgIcon" src="/home/ignacio/Escritorio/Proyectos Independientes/Curimapu/curimapu-api/resources/icon.jpg" alt="Fondo" />        <div class="page">        <h1>INFORME VISITA CULTIVO</h1>        <table border="1px solid" width="100%">        <tbody>        <tr>        <td width="50%">        <p><strong>Fecha:</strong> ${fec}</p>        <p>&nbsp;</p>        <p><strong>Agricultor:</strong>${contrato.id_agricultor.razon_social ? fnFormatoTexto(contrato.id_agricultor.razon_social) : '' } </p>        <p><strong>Telefono:</strong> ${contrato.id_agricultor.telefono[0] ? contrato.id_agricultor.telefono[0] : '' }</p>        <p><strong>E-Mail:&nbsp; </strong>${contrato.id_agricultor.email ? contrato.id_agricultor.email : '' }</p>        <p><strong>Especie:</strong> ${contrato.id_especie.nombre ? fnFormatoTexto(contrato.id_especie.nombre) : '' }</p>        </td>        <td width="50%">        <p><strong>Superficie:</strong> ${contrato.superficie ? fnFormatoTexto(contrato.superficie) : ''}</p>        <p><strong>Variedad:&nbsp; </strong>${variedad ? fnFormatoTexto(variedad) : '' }</p>        <p><strong>Potrero:</strong>${contrato.id_ficha.potrero ? fnFormatoTexto(contrato.id_ficha.potrero) : ''}</p>        </td>        </tr>        </tbody>        </table>        <p>&nbsp;</p>        <table border="1px" width="100%">        <tbody>        <tr>        <td width="50%">        <p><strong>Estado Fenol&oacute;gico:</strong>${visita.estado_fenologico}</p>        <p><strong>Estado malezas:</strong>${visita.estado_maleza}</p>        <p><strong>Cosecha: </strong>${visita.cosecha}</p>        </td>        <td width="50%">        <p><strong>Humedad:</strong> ${visita.humedad_suelo}</p>        <p><strong>Estado de crecimiento:</strong>${visita.estado_crecimiento}</p>            <p><strong>Estado fitosanitario:</strong> ${visita.estado_fitosantiario}</p>        <p><strong>Estado general del cultivo:</strong> ${visita.estado_general}</p>        </td>        </tr>        </tbody>        </table>        </div>        <br />        <h3>OBSERVACIONES GENERALES:</h3>       <p>        ${fnFormatoTexto(visita.observacion)}       </p>       <h3>RECOMENDACIONES:</h3>       <p>        ${fnFormatoTexto(visita.recomendaciones)}       </p>       ${img}      </body>    </html>";
-	  var html = '<table><tr><td rowspan="2"> columna de 2 </td><td colspan="2"> fila de 2 </td></tr><tr><td> celda sola 1 </td><td> celda sola 2 </td></tr></table>';
-	  let doc = new jsPDF();
-	  doc.fromHTML(html, 10, 10, {'width': 180});
-	  doc.save('FichaPreContratoHTML.pdf');
+    var html = '<table><tr><td rowspan="2"> columna de 2 </td><td colspan="2"> fila de 2 </td></tr><tr><td> celda sola 1 </td><td> celda sola 2 </td></tr></table>';
+    let doc = new jsPDF();
+    doc.fromHTML(html, 10, 10, {'width': 180});
+    doc.save('FichaPreContratoHTML.pdf');
   }
 
   downloadPDF(){
 
-  	let doc = new jsPDF();
-  	doc.setFontSize(18);
+    let doc = new jsPDF();
+    doc.setFontSize(18);
     //doc.text(7, 15, "Ficha Pre-Contrato");
     doc.autoTableSetDefaults({
         headerStyles: {fillColor: [155, 89, 182]}, // Purple
