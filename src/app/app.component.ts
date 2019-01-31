@@ -25,6 +25,9 @@ function stat2col(value) {
   else if (value == "Alta") {
     return [0,200,0];
   }
+  else{
+    return [255,255,255];
+  }
 }
 
 function stat2col_maleza(value) {
@@ -48,6 +51,9 @@ function stat2col_maleza(value) {
   }
   else if (value == "Alta") {
     return [255,0,0];
+  }
+  else{
+    return [255,255,255];
   }
 }
 
