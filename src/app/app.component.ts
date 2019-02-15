@@ -3,27 +3,59 @@ import { Component } from '@angular/core';
 
 declare var jsPDF: any; // Important
 
+(function(API){
+API.myText = function(txt, options, x, y) {
+    options = options ||{};
+    /* Use the options align property to specify desired text alignment
+     * Param x will be ignored if desired text alignment is 'center'.
+     * Usage of options can easily extend the function to apply different text
+     * styles and sizes
+    */
+    if( options.align == "center" ){
+        // Get current font size
+        var fontSize = this.internal.getFontSize();
+
+        // Get page width
+        var pageWidth = this.internal.pageSize.width;
+
+        // Get the actual text's width
+        /* You multiply the unit width of your string by your font size and divide
+         * by the internal scale factor. The division is necessary
+         * for the case where you use units other than 'pt' in the constructor
+         * of jsPDF.
+        */
+        var txtWidth = this.getStringUnitWidth(txt)*fontSize/this.internal.scaleFactor;
+
+        // Calculate text's x coordinate
+        x = ( pageWidth - txtWidth ) / 2;
+    }
+
+    // Draw text at x,y
+    this.text(txt,x,y);
+}
+})(jsPDF.API);
+
 function stat2col(value) {
   if (value== "Excelente") {
-    return [0,0,255];
+    return [0,123,255];
   }
   else if (value == "Buena") {
-    return [0,200,0];
+    return [40,167,69];
   }
   else if (value == "Regular") {
-    return [200,200,0];
+    return [255,193,7];
   }
   else if (value == "Mala") {
-    return [255,0,0];
+    return [220,53,69];
   }
   else if (value == "Sin Especificar") {
-    return [128,128,128];
+    return [84,91,98];
   }
   else if (value == "Baja") {
-    return [128,128,128];
+    return [84,91,98];
   }
   else if (value == "Alta") {
-    return [0,200,0];
+    return [40,167,69];
   }
   else{
     return [255,255,255];
@@ -32,25 +64,25 @@ function stat2col(value) {
 
 function stat2col_maleza(value) {
   if (value== "Excelente") {
-    return [0,0,255];
+    return [0,123,255];
   }
   else if (value == "Buena") {
-    return [0,200,0];
+    return [40,167,69];
   }
   else if (value == "Regular") {
-    return [200,200,0];
+    return [255,193,7];
   }
   else if (value == "Mala") {
-    return [255,0,0];
+    return [220,53,69];
   }
   else if (value == "Sin Especificar") {
-    return [128,128,128];
+    return [84,91,98];
   }
   else if (value == "Baja") {
-    return [0,200,0];
+    return [40,167,69];
   }
   else if (value == "Alta") {
-    return [255,0,0];
+    return [220,53,69];
   }
   else{
     return [255,255,255];
@@ -209,11 +241,11 @@ export class AppComponent {
         path: "/assets/img_test2.jpg"
       }],
       /*Tabla final*/
-      estado_general: "Buena",
+      estado_general: "Excelente",
       estado_crecimiento: "Buena",
-      estado_malezas: "Regular",
-      estado_fitosantiario:"Buena",
-      humedad_suelo: "Buena"
+      estado_malezas: "Mala",
+      estado_fitosantiario:"Regular",
+      humedad_suelo: "Sin Especificar"
     };
 
     var array = [];
@@ -234,7 +266,7 @@ export class AppComponent {
       doc.autoTableSetDefaults({
           headerStyles: {fillColor: [155, 89, 182]}, // Purple
           startY: 10,
-          margin: {top: 100},
+          margin: {top: 100, bottom: 0},
           pageBreak: "avoid",
           addPageContent: function(data) {
               doc.setFontSize(20);
@@ -255,9 +287,9 @@ export class AppComponent {
       crop_row.push(crop_element);
 
       // Título de cada página
-      doc.setFontSize(32);
+      doc.setFontSize(23);
       doc.setFontType("bold");
-      doc.text(arrayIn["nombre_variedad"]+" - "+arrayIn["nombre_agricultor"], 60, 40);
+      doc.text(arrayIn["nombre_variedad"]+" - "+arrayIn["nombre_agricultor"], 30, 40);
 
       // Tabla
 
@@ -363,9 +395,9 @@ export class AppComponent {
         await this.loadImage(arrayIn["images"][0]["path"],img);
         console.log(img.width,img.height);
         if (height*img.width/img.height>width) {
-          doc.addImage(img, 'JPEG', 60, 280, width, width*img.height/img.width);
+          doc.addImage(img, 'JPEG', 40, 280 + (height - (width*img.height/img.width))/2, width, width*img.height/img.width);
         } else {
-          doc.addImage(img, 'JPEG', 60, 280, height*img.width/img.height, height);
+          doc.addImage(img, 'JPEG', 40 + (width - (height*img.width/img.height))/2, 280, height*img.width/img.height, height);
         }
       }
       catch(e){
@@ -373,9 +405,9 @@ export class AppComponent {
           await this.loadImage('assets/noimage.jpg',img);
           console.log(img.width,img.height);
           if (height*img.width/img.height>width) {
-            doc.addImage(img, 'JPEG', 60, 280, width, width*img.height/img.width);
+            doc.addImage(img, 'JPEG', 40, 280 + (height - (width*img.height/img.width))/2, width, width*img.height/img.width);
           } else {
-            doc.addImage(img, 'JPEG', 60, 280, height*img.width/img.height, height);
+            doc.addImage(img, 'JPEG', 40 + (width - (height*img.width/img.height))/2, 280, height*img.width/img.height, height);
           }
         }
         catch(e2){
@@ -384,27 +416,28 @@ export class AppComponent {
         }
       }
       //**** Segunda Imagen *****//
-      var width2 = 220;
-      var height2 = 120;
+      var width2 = 350;
+      var height2 = 180;
       var img2 = new Image();
       try{
         await this.loadImage(arrayIn["images"][1]["path"],img2);
         console.log(img2.width,img2.height);
         //doc.addImage(img2, 'JPEG', 450, 380, width2, width2*img2.height/img2.width);
         if (height2*img2.width/img2.height>width2) {
-          doc.addImage(img2, 'JPEG', 450, 340, width2, width2*img2.height/img2.width);
+          doc.addImage(img2, 'JPEG', 400, 280 + (height - (width2*img2.height/img.width))/2, width2, width2*img2.height/img2.width);
         } else {
-          doc.addImage(img2, 'JPEG', 450, 340, height2*img2.width/img2.height, height2);
+          doc.addImage(img2, 'JPEG', 400 + (width - (height2*img2.width/img2.height))/2, 280, height2*img2.width/img2.height, height2);
         }
       }
+
       catch(e){
         try{
           await this.loadImage('assets/noimage.jpg',img2);
           console.log(img2.width,img2.height);
           if (height2*img2.width/img2.height>width2) {
-            doc.addImage(img2, 'JPEG', 450, 340, width2, width2*img2.height/img2.width);
+            doc.addImage(img2, 'JPEG', 400, 280 + (height - (width2*img2.height/img.width))/2, width2, width2*img2.height/img2.width);
           } else {
-            doc.addImage(img2, 'JPEG', 450, 340, height2*img2.width/img2.height, height2);
+            doc.addImage(img2, 'JPEG', 400 + (width - (height2*img2.width/img2.height))/2, 280, height2*img2.width/img2.height, height2);
           }
         }
         catch(e2){
@@ -484,16 +517,24 @@ export class AppComponent {
         }); */
 
       doc.setFontSize(20);
-      doc.text("Resumen", 350, 490);
+      doc.myText("Resumen",{align: "center"},0,490);
       doc.setFontSize(10);
       doc.autoTable(statuses_cols, statuses_obj, {
         startY: 500,
-        headerStyles: {fillColor: [41, 128, 185]},
+        headerStyles: {
+          fillColor: [41, 128, 185],
+          halign:'center'
+        },
         createdCell: function(cell, data) {
           let rgb = cell.raw.color
           if (rgb) {
             cell.styles.fillColor = rgb;
-            cell.text.align = 'center';
+            if ((rgb[0]==255&&rgb[1]==255&&rgb[2]==255)||(rgb[0]==255&&rgb[1]==193&&rgb[2]==7)) {
+              cell.styles.textColor = [0,0,0];
+            } else {
+              cell.styles.textColor = [255,255,255];
+            }
+            cell.styles.halign = 'center';
             cell.text = cell.raw.code
           }
         }
@@ -509,6 +550,9 @@ export class AppComponent {
           console.log("Valores: ",key,":",arrayIn[key]);
         }
       }
+      doc.setFontSize(10);
+      doc.setFontType("normal");
+      doc.myText('Página ' + (i+1),{align: "center"},0,580);
 
       if (i!=(array.length-1)){
         doc.addPage();
