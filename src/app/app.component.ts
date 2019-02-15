@@ -3,6 +3,38 @@ import { Component } from '@angular/core';
 
 declare var jsPDF: any; // Important
 
+(function(API){
+API.myText = function(txt, options, x, y) {
+    options = options ||{};
+    /* Use the options align property to specify desired text alignment
+     * Param x will be ignored if desired text alignment is 'center'.
+     * Usage of options can easily extend the function to apply different text
+     * styles and sizes
+    */
+    if( options.align == "center" ){
+        // Get current font size
+        var fontSize = this.internal.getFontSize();
+
+        // Get page width
+        var pageWidth = this.internal.pageSize.width;
+
+        // Get the actual text's width
+        /* You multiply the unit width of your string by your font size and divide
+         * by the internal scale factor. The division is necessary
+         * for the case where you use units other than 'pt' in the constructor
+         * of jsPDF.
+        */
+        var txtWidth = this.getStringUnitWidth(txt)*fontSize/this.internal.scaleFactor;
+
+        // Calculate text's x coordinate
+        x = ( pageWidth - txtWidth ) / 2;
+    }
+
+    // Draw text at x,y
+    this.text(txt,x,y);
+}
+})(jsPDF.API);
+
 function stat2col(value) {
   if (value== "Excelente") {
     return [0,123,255];
@@ -363,9 +395,9 @@ export class AppComponent {
         await this.loadImage(arrayIn["images"][0]["path"],img);
         console.log(img.width,img.height);
         if (height*img.width/img.height>width) {
-          doc.addImage(img, 'JPEG', 45, 280, width, width*img.height/img.width);
+          doc.addImage(img, 'JPEG', 40, 280 + (height - (width*img.height/img.width))/2, width, width*img.height/img.width);
         } else {
-          doc.addImage(img, 'JPEG', 45, 280, height*img.width/img.height, height);
+          doc.addImage(img, 'JPEG', 40 + (width - (height*img.width/img.height))/2, 280, height*img.width/img.height, height);
         }
       }
       catch(e){
@@ -373,9 +405,9 @@ export class AppComponent {
           await this.loadImage('assets/noimage.jpg',img);
           console.log(img.width,img.height);
           if (height*img.width/img.height>width) {
-            doc.addImage(img, 'JPEG', 45, 280, width, width*img.height/img.width);
+            doc.addImage(img, 'JPEG', 40, 280 + (height - (width*img.height/img.width))/2, width, width*img.height/img.width);
           } else {
-            doc.addImage(img, 'JPEG', 45, 280, height*img.width/img.height, height);
+            doc.addImage(img, 'JPEG', 40 + (width - (height*img.width/img.height))/2, 280, height*img.width/img.height, height);
           }
         }
         catch(e2){
@@ -392,19 +424,20 @@ export class AppComponent {
         console.log(img2.width,img2.height);
         //doc.addImage(img2, 'JPEG', 450, 380, width2, width2*img2.height/img2.width);
         if (height2*img2.width/img2.height>width2) {
-          doc.addImage(img2, 'JPEG', 420, 280, width2, width2*img2.height/img2.width);
+          doc.addImage(img2, 'JPEG', 400, 280 + (height - (width2*img2.height/img.width))/2, width2, width2*img2.height/img2.width);
         } else {
-          doc.addImage(img2, 'JPEG', 420, 280, height2*img2.width/img2.height, height2);
+          doc.addImage(img2, 'JPEG', 400 + (width - (height2*img2.width/img2.height))/2, 280, height2*img2.width/img2.height, height2);
         }
       }
+
       catch(e){
         try{
           await this.loadImage('assets/noimage.jpg',img2);
           console.log(img2.width,img2.height);
           if (height2*img2.width/img2.height>width2) {
-            doc.addImage(img2, 'JPEG', 420, 280, width2, width2*img2.height/img2.width);
+            doc.addImage(img2, 'JPEG', 400, 280 + (height - (width2*img2.height/img.width))/2, width2, width2*img2.height/img2.width);
           } else {
-            doc.addImage(img2, 'JPEG', 420, 280, height2*img2.width/img2.height, height2);
+            doc.addImage(img2, 'JPEG', 400 + (width - (height2*img2.width/img2.height))/2, 280, height2*img2.width/img2.height, height2);
           }
         }
         catch(e2){
@@ -484,7 +517,7 @@ export class AppComponent {
         }); */
 
       doc.setFontSize(20);
-      doc.text("Resumen", 350, 490);
+      doc.myText("Resumen",{align: "center"},0,490);
       doc.setFontSize(10);
       doc.autoTable(statuses_cols, statuses_obj, {
         startY: 500,
@@ -519,7 +552,7 @@ export class AppComponent {
       }
       doc.setFontSize(10);
       doc.setFontType("normal");
-      doc.text(30,580, 'Página ' + (i+1));
+      doc.myText('Página ' + (i+1),{align: "center"},0,580);
 
       if (i!=(array.length-1)){
         doc.addPage();
