@@ -5,25 +5,25 @@ declare var jsPDF: any; // Important
 
 function stat2col(value) {
   if (value== "Excelente") {
-    return [0,0,255];
+    return [0,123,255];
   }
   else if (value == "Buena") {
-    return [0,200,0];
+    return [40,167,69];
   }
   else if (value == "Regular") {
-    return [200,200,0];
+    return [255,193,7];
   }
   else if (value == "Mala") {
-    return [255,0,0];
+    return [220,53,69];
   }
   else if (value == "Sin Especificar") {
-    return [128,128,128];
+    return [84,91,98];
   }
   else if (value == "Baja") {
-    return [128,128,128];
+    return [84,91,98];
   }
   else if (value == "Alta") {
-    return [0,200,0];
+    return [40,167,69];
   }
   else{
     return [255,255,255];
@@ -32,25 +32,25 @@ function stat2col(value) {
 
 function stat2col_maleza(value) {
   if (value== "Excelente") {
-    return [0,0,255];
+    return [0,123,255];
   }
   else if (value == "Buena") {
-    return [0,200,0];
+    return [40,167,69];
   }
   else if (value == "Regular") {
-    return [200,200,0];
+    return [255,193,7];
   }
   else if (value == "Mala") {
-    return [255,0,0];
+    return [220,53,69];
   }
   else if (value == "Sin Especificar") {
-    return [128,128,128];
+    return [84,91,98];
   }
   else if (value == "Baja") {
-    return [0,200,0];
+    return [40,167,69];
   }
   else if (value == "Alta") {
-    return [255,0,0];
+    return [220,53,69];
   }
   else{
     return [255,255,255];
@@ -147,11 +147,11 @@ export class AppComponent {
         path: "assets/vertical.jpg"
       }],
       /*Tabla final*/
-      estado_general: "Buena",
+      estado_general: "Excelente",
       estado_crecimiento: "Buena",
-      estado_malezas: "Regular",
-      estado_fitosantiario:"Buena",
-      humedad_suelo: "Buena"
+      estado_malezas: "Mala",
+      estado_fitosantiario:"Regular",
+      humedad_suelo: "Sin Especificar"
     };
     /*Los posibles valores para los estado tienen diferentes colores*/
     /*
@@ -384,17 +384,17 @@ export class AppComponent {
         }
       }
       //**** Segunda Imagen *****//
-      var width2 = 220;
-      var height2 = 120;
+      var width2 = 350;
+      var height2 = 180;
       var img2 = new Image();
       try{
         await this.loadImage(arrayIn["images"][1]["path"],img2);
         console.log(img2.width,img2.height);
         //doc.addImage(img2, 'JPEG', 450, 380, width2, width2*img2.height/img2.width);
         if (height2*img2.width/img2.height>width2) {
-          doc.addImage(img2, 'JPEG', 450, 340, width2, width2*img2.height/img2.width);
+          doc.addImage(img2, 'JPEG', 450, 280, width2, width2*img2.height/img2.width);
         } else {
-          doc.addImage(img2, 'JPEG', 450, 340, height2*img2.width/img2.height, height2);
+          doc.addImage(img2, 'JPEG', 450, 280, height2*img2.width/img2.height, height2);
         }
       }
       catch(e){
@@ -402,9 +402,9 @@ export class AppComponent {
           await this.loadImage('assets/noimage.jpg',img2);
           console.log(img2.width,img2.height);
           if (height2*img2.width/img2.height>width2) {
-            doc.addImage(img2, 'JPEG', 450, 340, width2, width2*img2.height/img2.width);
+            doc.addImage(img2, 'JPEG', 450, 280, width2, width2*img2.height/img2.width);
           } else {
-            doc.addImage(img2, 'JPEG', 450, 340, height2*img2.width/img2.height, height2);
+            doc.addImage(img2, 'JPEG', 450, 280, height2*img2.width/img2.height, height2);
           }
         }
         catch(e2){
@@ -488,12 +488,20 @@ export class AppComponent {
       doc.setFontSize(10);
       doc.autoTable(statuses_cols, statuses_obj, {
         startY: 500,
-        headerStyles: {fillColor: [41, 128, 185]},
+        headerStyles: {
+          fillColor: [41, 128, 185],
+          halign:'center'
+        },
         createdCell: function(cell, data) {
           let rgb = cell.raw.color
           if (rgb) {
             cell.styles.fillColor = rgb;
-            cell.text.align = 'center';
+            if ((rgb[0]==255&&rgb[1]==255&&rgb[2]==255)||(rgb[0]==255&&rgb[1]==193&&rgb[2]==7)) {
+              cell.styles.textColor = [0,0,0];
+            } else {
+              cell.styles.textColor = [255,255,255];
+            }
+            cell.styles.halign = 'center';
             cell.text = cell.raw.code
           }
         }
