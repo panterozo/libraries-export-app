@@ -147,11 +147,11 @@ export class AppComponent {
         path: "assets/vertical.jpg"
       }],
       /*Tabla final*/
-      estado_general: "Excelente",
+      estado_general: "Buena",
       estado_crecimiento: "Buena",
-      estado_malezas: "Mala",
-      estado_fitosantiario:"Regular",
-      humedad_suelo: "Sin Especificar"
+      estado_malezas: "Regular",
+      estado_fitosantiario:"Buena",
+      humedad_suelo: "Buena"
     };
     /*Los posibles valores para los estado tienen diferentes colores*/
     /*
@@ -209,11 +209,11 @@ export class AppComponent {
         path: "/assets/img_test2.jpg"
       }],
       /*Tabla final*/
-      estado_general: "Buena",
+      estado_general: "Excelente",
       estado_crecimiento: "Buena",
-      estado_malezas: "Regular",
-      estado_fitosantiario:"Buena",
-      humedad_suelo: "Buena"
+      estado_malezas: "Mala",
+      estado_fitosantiario:"Regular",
+      humedad_suelo: "Sin Especificar"
     };
 
     var array = [];
@@ -234,7 +234,7 @@ export class AppComponent {
       doc.autoTableSetDefaults({
           headerStyles: {fillColor: [155, 89, 182]}, // Purple
           startY: 10,
-          margin: {top: 100},
+          margin: {top: 100, bottom: 0},
           pageBreak: "avoid",
           addPageContent: function(data) {
               doc.setFontSize(20);
@@ -255,9 +255,9 @@ export class AppComponent {
       crop_row.push(crop_element);
 
       // Título de cada página
-      doc.setFontSize(32);
+      doc.setFontSize(23);
       doc.setFontType("bold");
-      doc.text(arrayIn["nombre_variedad"]+" - "+arrayIn["nombre_agricultor"], 60, 40);
+      doc.text(arrayIn["nombre_variedad"]+" - "+arrayIn["nombre_agricultor"], 30, 40);
 
       // Tabla
 
@@ -363,9 +363,9 @@ export class AppComponent {
         await this.loadImage(arrayIn["images"][0]["path"],img);
         console.log(img.width,img.height);
         if (height*img.width/img.height>width) {
-          doc.addImage(img, 'JPEG', 60, 280, width, width*img.height/img.width);
+          doc.addImage(img, 'JPEG', 45, 280, width, width*img.height/img.width);
         } else {
-          doc.addImage(img, 'JPEG', 60, 280, height*img.width/img.height, height);
+          doc.addImage(img, 'JPEG', 45, 280, height*img.width/img.height, height);
         }
       }
       catch(e){
@@ -373,9 +373,9 @@ export class AppComponent {
           await this.loadImage('assets/noimage.jpg',img);
           console.log(img.width,img.height);
           if (height*img.width/img.height>width) {
-            doc.addImage(img, 'JPEG', 60, 280, width, width*img.height/img.width);
+            doc.addImage(img, 'JPEG', 45, 280, width, width*img.height/img.width);
           } else {
-            doc.addImage(img, 'JPEG', 60, 280, height*img.width/img.height, height);
+            doc.addImage(img, 'JPEG', 45, 280, height*img.width/img.height, height);
           }
         }
         catch(e2){
@@ -392,9 +392,9 @@ export class AppComponent {
         console.log(img2.width,img2.height);
         //doc.addImage(img2, 'JPEG', 450, 380, width2, width2*img2.height/img2.width);
         if (height2*img2.width/img2.height>width2) {
-          doc.addImage(img2, 'JPEG', 450, 280, width2, width2*img2.height/img2.width);
+          doc.addImage(img2, 'JPEG', 420, 280, width2, width2*img2.height/img2.width);
         } else {
-          doc.addImage(img2, 'JPEG', 450, 280, height2*img2.width/img2.height, height2);
+          doc.addImage(img2, 'JPEG', 420, 280, height2*img2.width/img2.height, height2);
         }
       }
       catch(e){
@@ -402,9 +402,9 @@ export class AppComponent {
           await this.loadImage('assets/noimage.jpg',img2);
           console.log(img2.width,img2.height);
           if (height2*img2.width/img2.height>width2) {
-            doc.addImage(img2, 'JPEG', 450, 280, width2, width2*img2.height/img2.width);
+            doc.addImage(img2, 'JPEG', 420, 280, width2, width2*img2.height/img2.width);
           } else {
-            doc.addImage(img2, 'JPEG', 450, 280, height2*img2.width/img2.height, height2);
+            doc.addImage(img2, 'JPEG', 420, 280, height2*img2.width/img2.height, height2);
           }
         }
         catch(e2){
@@ -517,6 +517,9 @@ export class AppComponent {
           console.log("Valores: ",key,":",arrayIn[key]);
         }
       }
+      doc.setFontSize(10);
+      doc.setFontType("normal");
+      doc.text(30,580, 'Página ' + (i+1));
 
       if (i!=(array.length-1)){
         doc.addPage();
