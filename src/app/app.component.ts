@@ -97,6 +97,60 @@ function stat2col_maleza(value) {
 export class AppComponent {
   title = 'libraries-export-app';
 
+  async imprimeJsonInformeVisita(){
+
+    var obj ={
+      /** PRIMERA TABLA **/
+      /*Columna 1*/
+      date: "2018-12-26",
+      agricultor: "SOCIEDAD AGROGANADERA FORESTAL  Y FRUTICOLA BUENA VISTA LTDA.",      
+      telefono: "42-432266",
+      email:"email@miemail.com",
+      especie: "Maravilla",
+      /*Columna 2*/
+      superficie: "300",      
+      variedad:"Sumiko",      
+      potrero:"Pivote poniente",
+
+      /** SEGUNDA TABLA **/
+      /*Columna 1*/
+      estado_fenologico:"Pre-floración",
+      estado_malezas:"Regular",
+      cosecha:"Sin Especificar",
+
+      /*Columna 2*/
+      humedad:"Buena",
+      estado_crecimiento:"Buena",
+      estado_fitosantiario:"Buena",
+      estado_general:"Buena",
+
+      /*OBSERVACIONES GENERALES*/
+      /*NOTA: Estos dos campos pueden tener mucho texto.
+      Pensarles un espacio suficientemente grande*/
+      observaciones_generales:"Cultivo  en  pre floración,  se  está  realizando  limpieza  de  sectores "+
+      "con mayor carga de  malezas",
+      recomendaciones:"1. Programar aplicación  de  urea  por fertirriego en  2 tandas  de  100kg cada  una."+
+      "2.  Realizar  aplicación de  Fungicida preventivo  + Boro, se  envía adjunta imagen  con algunos "+
+      "productos recomendados, elegir una de  las opciones. Favor confirmarnos  la  fecha de  la  aplicación, "+
+      "ya  que ésta  debe  ser previamente informada al  SAG.",
+
+      /*Este es un array de 0 a N imágenes*/
+      imgs:[{
+        path: "/assets/img_test1.jpg"
+      },{
+        path: "/assets/img_test2.jpg"
+      },{
+        path: "/assets/another.jpg"
+      },{
+        path: "/assets/horizontal.jpg"
+      }]
+
+    };
+
+    console.log(obj);
+
+  }
+
   async imprimeJson(){
 
     var tablaSegundaPagina = {
