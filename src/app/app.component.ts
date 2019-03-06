@@ -302,6 +302,16 @@ export class AppComponent {
       humedad_suelo: "Sin Especificar"
     };
 
+    var frontpage = {
+        line1: "Canola",
+        line2: "Dow Agroscience",
+        season: "2017-2018",
+        images: [{
+          path: "/assets/front_background.jpg",
+        },{
+          path: "/assets/logo.jpg"
+        }]
+    };
     var array = [];
     array.push(informe2); // Primera página | El informe traerá otros datos por cada array
     array.push(informe); // Segunda página | El informe traerá otros datos por cada array
@@ -313,10 +323,51 @@ export class AppComponent {
 
 
     var doc = new jsPDF('l', 'pt', 'letter');
+    
+    
+    //*************************//
+    //*** BEGIN: Frontpage ****//
+    //*************************//
+    
+    doc.addPage()
+    doc.setPage(1)
+    var width = 792
+    var height = 255
+    var img = new Image()
+    try{
+      await this.loadImage(frontpage.images[0].path, img);
+      doc.addImage(img, 'JPEG', 0, 210, width, img.height)
+     
+    }
+    catch(e){
+      console.log("Background error:",e)
+    } 
+    var width = 128
+    var height = 128
+    var img = new Image()
+    try {
+      await this.loadImage(frontpage.images[1].path, img);
+      doc.addImage(img, 'JPEG', 332, 20, width, height)
+    }
+    catch(e){
+      console.log("Logo error:", e)
+    }
+    
 
+    doc.setFontSize(40)
+    doc.setFontType("bold")
+    doc.text(frontpage.line1 + "\n" + frontpage.line2, 396, 300, {align: "center", lineHeightFactor: 2.0})
+    doc.setTextColor("#898989")
+    doc.text(frontpage.season,396 ,500, {align: "center"})
+    
 
+    //***********************//
+    //*** END: Frontpage ****//
+    //***********************//
+
+    doc.setTextColor("#000000")
     for(var i=0;i<array.length;i++){
-      doc.setPage(i+1);
+      doc.setPage(i+2);
       doc.autoTableSetDefaults({
           headerStyles: {fillColor: [155, 89, 182]}, // Purple
           startY: 10,
@@ -326,7 +377,7 @@ export class AppComponent {
               doc.setFontSize(20);
           }
       });
-      console.log("\nPágina "+(i+1)+"\n");
+      // console.log("\nPágina "+(i+1)+"\n");
       var arrayIn = array[i];
       var crop_cols = [];
       var crop_element = {};
@@ -447,7 +498,7 @@ export class AppComponent {
       var img = new Image();
       try{
         await this.loadImage(arrayIn["images"][0]["path"],img);
-        console.log(img.width,img.height);
+        // console.log(img.width,img.height);
         if (height*img.width/img.height>width) {
           doc.addImage(img, 'JPEG', 40, 280 + (height - (width*img.height/img.width))/2, width, width*img.height/img.width);
         } else {
@@ -457,7 +508,7 @@ export class AppComponent {
       catch(e){
         try{
           await this.loadImage('assets/noimage.jpg',img);
-          console.log(img.width,img.height);
+          // console.log(img.width,img.height);
           if (height*img.width/img.height>width) {
             doc.addImage(img, 'JPEG', 40, 280 + (height - (width*img.height/img.width))/2, width, width*img.height/img.width);
           } else {
@@ -466,7 +517,7 @@ export class AppComponent {
         }
         catch(e2){
           /*Aquí caerá si no puede cargar tampoco noimage.jpg. No se muestra ninguna imagen*/
-          console.log("nada que hacer");
+          // console.log("nada que hacer");
         }
       }
       //**** Segunda Imagen *****//
@@ -475,7 +526,7 @@ export class AppComponent {
       var img2 = new Image();
       try{
         await this.loadImage(arrayIn["images"][1]["path"],img2);
-        console.log(img2.width,img2.height);
+        // console.log(img2.width,img2.height);
         //doc.addImage(img2, 'JPEG', 450, 380, width2, width2*img2.height/img2.width);
         if (height2*img2.width/img2.height>width2) {
           doc.addImage(img2, 'JPEG', 400, 280 + (height - (width2*img2.height/img.width))/2, width2, width2*img2.height/img2.width);
@@ -487,7 +538,7 @@ export class AppComponent {
       catch(e){
         try{
           await this.loadImage('assets/noimage.jpg',img2);
-          console.log(img2.width,img2.height);
+          // console.log(img2.width,img2.height);
           if (height2*img2.width/img2.height>width2) {
             doc.addImage(img2, 'JPEG', 400, 280 + (height - (width2*img2.height/img.width))/2, width2, width2*img2.height/img2.width);
           } else {
@@ -496,7 +547,7 @@ export class AppComponent {
         }
         catch(e2){
           /*Aquí caerá si no puede cargar tampoco noimage.jpg. No se muestra ninguna imagen*/
-          console.log("nada que hacer 2");
+          // console.log("nada que hacer 2");
         }
       }
 
@@ -601,7 +652,7 @@ export class AppComponent {
 
       for (var key in arrayIn){
         if (arrayIn.hasOwnProperty(key)) {
-          console.log("Valores: ",key,":",arrayIn[key]);
+          // console.log("Valores: ",key,":",arrayIn[key]);
         }
       }
       doc.setFontSize(10);
